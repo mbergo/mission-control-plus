@@ -1,0 +1,297 @@
+# Instincts generated from https://github.com/mbergo/mission-control-plus
+# Generated: 2026-05-24T06:37:22.613Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: mission-control-plus-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/mbergo/mission-control-plus
+---
+
+# Mission Control Plus Commit Length
+
+## Action
+
+Write moderate-length commit messages (~79 characters)
+
+## Evidence
+
+- Average commit message length: 79 chars
+- Based on 2 commits
+
+---
+id: mission-control-plus-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/mbergo/mission-control-plus
+---
+
+# Mission Control Plus Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: mission-control-plus-import-alias
+trigger: "when importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/mbergo/mission-control-plus
+---
+
+# Mission Control Plus Import Alias
+
+## Action
+
+Use path aliases (@/, ~/) instead of relative imports
+
+## Evidence
+
+- Import analysis shows alias pattern
+- Example: import { x } from '@/lib/x'
+
+---
+id: mission-control-plus-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/mbergo/mission-control-plus
+---
+
+# Mission Control Plus Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: mission-control-plus-arch-type-based
+trigger: "when adding new code"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/mbergo/mission-control-plus
+---
+
+# Mission Control Plus Arch Type Based
+
+## Action
+
+Place code in the appropriate type folder (components/, services/, utils/, etc.)
+
+## Evidence
+
+- Type-based module organization detected
+- Folders: app, components, lib, store
+
+---
+id: mission-control-plus-instinct-file-naming
+trigger: "When creating a new file"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: mbergo/mission-control-plus
+---
+
+# Mission Control Plus Instinct File Naming
+
+## Action
+
+Name the file using camelCase
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.files
+
+---
+id: mission-control-plus-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: mbergo/mission-control-plus
+---
+
+# Mission Control Plus Instinct Function Naming
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.functions
+
+---
+id: mission-control-plus-instinct-class-naming
+trigger: "When defining a new class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: mbergo/mission-control-plus
+---
+
+# Mission Control Plus Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.classes
+
+---
+id: mission-control-plus-instinct-constant-naming
+trigger: "When declaring a constant"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: mbergo/mission-control-plus
+---
+
+# Mission Control Plus Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.constants
+
+---
+id: mission-control-plus-instinct-import-style
+trigger: "When importing modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: mbergo/mission-control-plus
+---
+
+# Mission Control Plus Instinct Import Style
+
+## Action
+
+Use alias import style
+
+## Evidence
+
+- Pattern in codeStyle.importStyle
+
+---
+id: mission-control-plus-instinct-export-style
+trigger: "When exporting modules or functions"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: mbergo/mission-control-plus
+---
+
+# Mission Control Plus Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in codeStyle.exportStyle
+
+---
+id: mission-control-plus-instinct-error-boundaries
+trigger: "When handling errors in components"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: mbergo/mission-control-plus
+---
+
+# Mission Control Plus Instinct Error Boundaries
+
+## Action
+
+Use error boundaries for error handling
+
+## Evidence
+
+- Pattern in errorHandling.errorBoundaries
+
+---
+id: mission-control-plus-instinct-test-location-mixed
+trigger: "When adding new tests"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: mbergo/mission-control-plus
+---
+
+# Mission Control Plus Instinct Test Location Mixed
+
+## Action
+
+Place test files either alongside source files or in dedicated test folders as appropriate
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation
+
+---
+id: mission-control-plus-instinct-git-commit-freeform
+trigger: "When writing a commit message"
+confidence: 0.8
+domain: git
+source: repo-analysis
+source_repo: mbergo/mission-control-plus
+---
+
+# Mission Control Plus Instinct Git Commit Freeform
+
+## Action
+
+Use a freeform commit message without a required prefix
+
+## Evidence
+
+- Pattern in commits.type
+- Example: 'Add personal life OS mode: Google OAuth, panels, briefings'
+
+---
+id: mission-control-plus-instinct-git-commit-length
+trigger: "When composing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: mbergo/mission-control-plus
+---
+
+# Mission Control Plus Instinct Git Commit Length
+
+## Action
+
+Keep the commit message concise, around 79 characters on average
+
+## Evidence
+
+- Pattern in commits.averageLength
+
