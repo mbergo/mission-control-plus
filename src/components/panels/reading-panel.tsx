@@ -59,7 +59,7 @@ export function ReadingPanel() {
     const r = await fetch('/api/personal/reading', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ kind: url ? 'url' : 'url', title: title.trim(), url: url.trim() || null }),
+      body: JSON.stringify({ kind: 'url', title: title.trim(), url: url.trim() || null }),
     })
     if (!r.ok) {
       const j = await r.json().catch(() => ({}))

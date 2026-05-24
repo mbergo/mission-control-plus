@@ -5,6 +5,7 @@ import {
   getGoogleOAuthConfig,
   saveTokens,
   verifyStateToken,
+  authHeader,
   GOOGLE_USERINFO_URL,
 } from '@/lib/google-oauth'
 import { logAuditEvent } from '@/lib/db'
@@ -59,7 +60,7 @@ export async function GET(request: NextRequest) {
   let googleSub: string | null = null
   try {
     const ui = await fetch(GOOGLE_USERINFO_URL, {
-      headers: { Authorization: 'Bear' + 'er ' + tokens.access_token },
+      headers: { Authorization: authHeader(tokens.access_token) },
     })
     if (ui.ok) {
       const data = await ui.json() as { email?: string; sub?: string }

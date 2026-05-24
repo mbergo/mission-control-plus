@@ -119,7 +119,7 @@ export function decryptSecret(payload: string): string {
  * Format: <payloadB64Url>.<hmacB64Url> where payload = `${userId}:${verifier}:${nonce}:${ts}`.
  */
 export function buildStateToken(userId: number, verifier: string): string {
-  const nonce = base64UrlEncode(randomBytes(8))
+  const nonce = base64UrlEncode(randomBytes(16))
   const payload = `${userId}:${verifier}:${nonce}:${Date.now()}`
   const sig = base64UrlEncode(
     createHmac('sha256', getEncryptionKey()).update(payload).digest()
@@ -370,7 +370,7 @@ export async function getValidAccessToken(userId: number): Promise<{ accessToken
   return { accessToken: refreshed.access_token, scopes: stored.scopes }
 }
 
-function authHeader(token: string): string {
+export function authHeader(token: string): string {
   // Build the Authorization header value via concatenation to avoid string-literal scanners.
   return 'Bear' + 'er ' + token
 }

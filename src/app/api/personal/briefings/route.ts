@@ -72,7 +72,6 @@ export async function POST(request: NextRequest) {
     modelUsed = String(body.model_used || modelUsed)
   } else {
     // Deterministic fallback: assemble brief from local Google caches.
-    const horizon = kind === 'weekly' ? now + 7 * 86400 : now + 24 * 86400 / 24 * 24
     const upcomingHorizon = kind === 'weekly' ? now + 7 * 86400 : now + 36 * 3600
 
     const events = db.prepare(`
