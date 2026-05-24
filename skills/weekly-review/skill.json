@@ -1,0 +1,12 @@
+{
+  "name": "weekly-review",
+  "version": "0.1.0",
+  "description": "Sunday weekly-review agent: reads the last 7 journal entries + briefings + completed/missed tasks and proposes adjustments to goals for the coming week.",
+  "author": "Builderz Labs",
+  "license": "MIT",
+  "tools": ["http"],
+  "parameters": {
+    "base_url": { "type": "string", "default": "http://localhost:3000" }
+  },
+  "tags": ["personal", "review", "journal", "goals"]
+}

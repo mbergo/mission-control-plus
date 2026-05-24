@@ -1,0 +1,14 @@
+{
+  "name": "study-buddy",
+  "version": "0.1.0",
+  "description": "Summarise reading sources (URLs, Drive docs, pasted text), generate Anki-style flashcards, and run quiz sessions in chat. Personal-mode only.",
+  "author": "Builderz Labs",
+  "license": "MIT",
+  "tools": ["http"],
+  "parameters": {
+    "base_url": { "type": "string", "default": "http://localhost:3000" },
+    "source_id": { "type": "number", "description": "reading_sources.id to study" },
+    "cards_per_source": { "type": "number", "default": 8 }
+  },
+  "tags": ["personal", "study", "reading", "flashcards", "spaced-repetition"]
+}

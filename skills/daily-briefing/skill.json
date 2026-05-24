@@ -1,0 +1,14 @@
+{
+  "name": "daily-briefing",
+  "version": "0.1.0",
+  "description": "Generate a personal morning briefing from Gmail + Calendar + Tasks (consumer @gmail.com via OAuth). Personal-mode only.",
+  "author": "Builderz Labs",
+  "license": "MIT",
+  "tools": ["http"],
+  "parameters": {
+    "base_url": { "type": "string", "default": "http://localhost:3000" },
+    "kind": { "type": "string", "enum": ["morning", "evening", "weekly"], "default": "morning" },
+    "model": { "type": "string", "description": "AI model to call (leave empty for deterministic local assembly)" }
+  },
+  "tags": ["personal", "google", "gmail", "calendar", "briefing"]
+}

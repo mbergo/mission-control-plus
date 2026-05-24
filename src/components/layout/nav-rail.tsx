@@ -26,6 +26,19 @@ interface NavGroup {
 }
 
 const navGroups: NavGroup[] = [
+  // Personal Life OS panels (shown only when MC_MODE=personal).
+  {
+    id: 'personal',
+    label: 'PERSONAL',
+    items: [
+      { id: 'today', label: 'Today', icon: <OverviewIcon />, priority: true, essential: true },
+      { id: 'inbox', label: 'Inbox', icon: <ChatIcon />, priority: true, essential: true },
+      { id: 'calendar', label: 'Calendar', icon: <CronIcon />, priority: true, essential: true },
+      { id: 'reading', label: 'Reading', icon: <MemoryIcon />, priority: false, essential: true },
+      { id: 'journal', label: 'Journal', icon: <AuditIcon />, priority: false, essential: true },
+      { id: 'briefings', label: 'Briefings', icon: <ActivityIcon />, priority: false, essential: true },
+    ],
+  },
   {
     id: 'core',
     items: [
@@ -125,8 +138,20 @@ const gatewayOnlyPanels = new Set([
 ])
 const adminOnlyPanels = new Set<string>([])
 
+// Panels that are hidden when MC_MODE=personal (team/multi-tenant features).
+const teamOnlyPanels = new Set<string>([
+  'agents', 'tasks', 'channels', 'office', 'monitor',
+  'webhooks', 'alerts', 'github',
+  'security', 'users', 'audit', 'gateway-parent', 'gateways', 'gateway-config',
+  'exec-approvals',
+])
+// Panels that only make sense when MC_MODE=personal.
+const personalOnlyPanels = new Set<string>([
+  'today', 'inbox', 'calendar', 'reading', 'journal', 'briefings',
+])
+
 export function NavRail() {
-  const { activeTab, connection, dashboardMode, currentUser, activeTenant, tenants, osUsers, setActiveTenant, fetchTenants, fetchOsUsers, activeProject, projects, setActiveProject, fetchProjects, sidebarExpanded, collapsedGroups, toggleSidebar, toggleGroup, defaultOrgName, interfaceMode, setInterfaceMode } = useMissionControl()
+  const { activeTab, connection, dashboardMode, currentUser, activeTenant, tenants, osUsers, setActiveTenant, fetchTenants, fetchOsUsers, activeProject, projects, setActiveProject, fetchProjects, sidebarExpanded, collapsedGroups, toggleSidebar, toggleGroup, defaultOrgName, interfaceMode, setInterfaceMode, mcMode } = useMissionControl()
   const navigateToPanel = useNavigateToPanel()
   const prefetchPanel = usePrefetchPanel()
   const tn = useTranslations('nav')
@@ -175,6 +200,7 @@ export function NavRail() {
   // In local mode, hide gateway-only panels. Non-admin users don't see admin-only panels.
   // In essential mode, hide non-essential panels.
   const isEssential = interfaceMode === 'essential'
+  const isPersonalMode = mcMode === 'personal'
   function filterItems(items: NavItem[]): NavItem[] {
     return items
       .map(i => {
@@ -185,6 +211,8 @@ export function NavRail() {
         }
         if (isLocal && gatewayOnlyPanels.has(i.id)) return null
         if (!isAdmin && adminOnlyPanels.has(i.id)) return null
+        if (isPersonalMode && teamOnlyPanels.has(i.id)) return null
+        if (!isPersonalMode && personalOnlyPanels.has(i.id)) return null
         if (isEssential && !i.essential) return null
         return i
       })

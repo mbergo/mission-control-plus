@@ -80,7 +80,20 @@ function resolveDefaultCliBin(command: string): string {
   return fs.existsSync(npmCmdShim) ? npmCmdShim : command
 }
 
+/**
+ * Mission Control deployment mode.
+ * - 'team' (default): full agent-orchestration dashboard (gateways, multi-tenant, etc.)
+ * - 'personal': single-user personal life OS (Today, Inbox, Calendar, Reading, Journal, Briefings)
+ *
+ * Set via the `MC_MODE` environment variable. Unknown values fall back to 'team'.
+ */
+const rawMcMode = String(process.env.MC_MODE || '').trim().toLowerCase()
+const resolvedMcMode: 'team' | 'personal' = rawMcMode === 'personal' ? 'personal' : 'team'
+
 export const config = {
+  mcMode: resolvedMcMode,
+  /** Restrict all AI calls touching personal Google data to a local model (Ollama). */
+  personalAiLocalOnly: String(process.env.MC_PERSONAL_AI_LOCAL_ONLY || '').trim() === '1',
   claudeHome:
     process.env.MC_CLAUDE_HOME ||
     path.join(os.homedir(), '.claude'),

@@ -1,0 +1,14 @@
+{
+  "name": "inbox-triage",
+  "version": "0.1.0",
+  "description": "Classify recent Gmail threads (newsletter / personal / action-needed / receipt), produce 1-line summaries, and propose label / archive / draft actions. Apply only on explicit confirm.",
+  "author": "Builderz Labs",
+  "license": "MIT",
+  "tools": ["http"],
+  "parameters": {
+    "base_url": { "type": "string", "default": "http://localhost:3000" },
+    "lookback": { "type": "string", "default": "newer_than:1d" },
+    "max": { "type": "number", "default": 20 }
+  },
+  "tags": ["personal", "google", "gmail", "triage"]
+}
