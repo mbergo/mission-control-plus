@@ -330,7 +330,22 @@ export async function GET(request: NextRequest) {
 
   // Merge plugin integrations and categories
   const pluginIntegrations = getPluginIntegrations()
-  const allIntegrations: IntegrationDef[] = [...INTEGRATIONS]
+  let allIntegrations: IntegrationDef[] = [...INTEGRATIONS]
+
+  // In personal mode, retire the gws CLI–based Google Workspace integration
+  // (it targets commercial Workspace admin tenants, not consumer @gmail.com),
+  // and surface a "Google (personal)" entry that points at the OAuth flow.
+  if (config.mcMode === 'personal') {
+    allIntegrations = allIntegrations.filter(i => i.id !== 'google_workspace')
+    allIntegrations.push({
+      id: 'google_personal',
+      name: 'Google (personal)',
+      category: 'productivity',
+      envVars: ['GOOGLE_OAUTH_CLIENT_ID', 'GOOGLE_OAUTH_CLIENT_SECRET', 'GOOGLE_OAUTH_REDIRECT_URI'],
+      testable: false,
+      recommendation: 'Personal-mode Google connection (Gmail / Calendar / Tasks). See docs/personal-mode.md, then connect from the Inbox or Today panel.',
+    })
+  }
   const pluginIntegrationMap = new Map<string, PluginIntegrationDef>()
   for (const pi of pluginIntegrations) {
     if (!allIntegrations.some(i => i.id === pi.id)) {

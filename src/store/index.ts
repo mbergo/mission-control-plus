@@ -591,6 +591,10 @@ interface MissionControlStore {
   interfaceMode: 'essential' | 'full'
   setInterfaceMode: (mode: 'essential' | 'full') => void
 
+  // Deployment mode (team vs personal life OS)
+  mcMode: 'team' | 'personal'
+  setMcMode: (mode: 'team' | 'personal') => void
+
   // UI State
   activeTab: string
   sidebarExpanded: boolean
@@ -941,6 +945,8 @@ export const useMissionControl = create<MissionControlStore>()(
     // Interface Mode
     interfaceMode: 'essential' as const,
     setInterfaceMode: (mode) => set({ interfaceMode: mode }),
+    mcMode: 'team' as const,
+    setMcMode: (mode) => set({ mcMode: mode }),
 
     // UI State — sidebar & layout persistence
     activeTab: 'overview',

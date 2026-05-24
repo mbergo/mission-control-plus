@@ -39,6 +39,12 @@ import { ExecApprovalPanel } from '@/components/panels/exec-approval-panel'
 import { SystemMonitorPanel } from '@/components/panels/system-monitor-panel'
 import { ChatPagePanel } from '@/components/panels/chat-page-panel'
 import { ChatPanel } from '@/components/chat/chat-panel'
+import { TodayPanel } from '@/components/panels/today-panel'
+import { InboxPanel } from '@/components/panels/inbox-panel'
+import { CalendarPanel } from '@/components/panels/calendar-panel'
+import { ReadingPanel } from '@/components/panels/reading-panel'
+import { JournalPanel } from '@/components/panels/journal-panel'
+import { BriefingsPanel } from '@/components/panels/briefings-panel'
 import { STORAGE_GATEWAY_URL } from '@/lib/device-identity'
 import { getPluginPanel } from '@/lib/plugins'
 import { shouldRedirectDashboardToHttps } from '@/lib/browser-security'
@@ -90,7 +96,7 @@ export default function Home() {
   const tb = useTranslations('boot')
   const tp = useTranslations('page')
   const tc = useTranslations('common')
-  const { activeTab, setActiveTab, setCurrentUser, setDashboardMode, setGatewayAvailable, setLocalSessionsAvailable, setCapabilitiesChecked, setSubscription, setDefaultOrgName, setUpdateAvailable, setOpenclawUpdate, showOnboarding, setShowOnboarding, liveFeedOpen, toggleLiveFeed, showProjectManagerModal, setShowProjectManagerModal, fetchProjects, setChatPanelOpen, bootComplete, setBootComplete, setAgents, setSessions, setProjects, setInterfaceMode, setMemoryGraphAgents, setSkillsData } = useMissionControl()
+  const { activeTab, setActiveTab, setCurrentUser, setDashboardMode, setGatewayAvailable, setLocalSessionsAvailable, setCapabilitiesChecked, setSubscription, setDefaultOrgName, setUpdateAvailable, setOpenclawUpdate, showOnboarding, setShowOnboarding, liveFeedOpen, toggleLiveFeed, showProjectManagerModal, setShowProjectManagerModal, fetchProjects, setChatPanelOpen, bootComplete, setBootComplete, setAgents, setSessions, setProjects, setInterfaceMode, setMemoryGraphAgents, setSkillsData, mcMode, setMcMode } = useMissionControl()
 
   // Sync URL → Zustand activeTab
   const pathname = usePathname()
@@ -165,6 +171,14 @@ export default function Home() {
 
   useEffect(() => {
     setIsClient(true)
+
+    // Fetch deployment mode (team vs personal life OS).
+    fetch('/api/personal/mode')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.mode === 'personal') setMcMode('personal')
+      })
+      .catch(() => {})
 
     if (shouldRedirectDashboardToHttps({
       protocol: window.location.protocol,
@@ -485,11 +499,13 @@ export default function Home() {
 
 const ESSENTIAL_PANELS = new Set([
   'overview', 'agents', 'tasks', 'chat', 'activity', 'logs', 'settings',
+  // Personal-mode panels are essential in personal mode.
+  'today', 'inbox', 'calendar', 'reading', 'journal', 'briefings',
 ])
 
 function ContentRouter({ tab }: { tab: string }) {
   const tp = useTranslations('page')
-  const { dashboardMode, interfaceMode, setInterfaceMode } = useMissionControl()
+  const { dashboardMode, interfaceMode, setInterfaceMode, mcMode } = useMissionControl()
   const navigateToPanel = useNavigateToPanel()
   const isLocal = dashboardMode === 'local'
   const panelName = tab.replace(/-/g, ' ')
@@ -526,6 +542,7 @@ function ContentRouter({ tab }: { tab: string }) {
 
   switch (tab) {
     case 'overview':
+      if (mcMode === 'personal') return <TodayPanel />
       return (
         <>
           <Dashboard />
@@ -608,6 +625,18 @@ function ContentRouter({ tab }: { tab: string }) {
       return <ExecApprovalPanel />
     case 'chat':
       return <ChatPagePanel />
+    case 'today':
+      return <TodayPanel />
+    case 'inbox':
+      return <InboxPanel />
+    case 'calendar':
+      return <CalendarPanel />
+    case 'reading':
+      return <ReadingPanel />
+    case 'journal':
+      return <JournalPanel />
+    case 'briefings':
+      return <BriefingsPanel />
     default: {
       return renderPluginPanel(tab)
     }

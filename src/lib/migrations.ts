@@ -1418,15 +1418,155 @@ const migrations: Migration[] = [
     }
   },
   {
-    id: '050_mcp_call_receipt_signing',
+    id: '051_personal_life_os',
     up(db: Database.Database) {
-      // Add Ed25519 receipt signing columns to the MCP audit log.
-      // payload_hash: SHA-256 of the canonical JSON payload at write time
-      // signature: Ed25519 signature (hex) over the canonical payload
-      // public_key: base64-encoded Ed25519 public key for offline verification
-      db.exec(`ALTER TABLE mcp_call_log ADD COLUMN payload_hash TEXT DEFAULT NULL`)
-      db.exec(`ALTER TABLE mcp_call_log ADD COLUMN signature TEXT DEFAULT NULL`)
-      db.exec(`ALTER TABLE mcp_call_log ADD COLUMN public_key TEXT DEFAULT NULL`)
+      // Google OAuth tokens (consumer / @gmail.com flow)
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS google_oauth_tokens (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          google_sub TEXT,
+          email TEXT,
+          access_token TEXT NOT NULL,
+          refresh_token TEXT,
+          token_type TEXT,
+          scopes TEXT NOT NULL DEFAULT '',
+          expiry INTEGER,
+          created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+          updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+          UNIQUE(user_id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_google_oauth_user ON google_oauth_tokens(user_id);
+      `)
+      // Gmail thread cache
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS gmail_thread_cache (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          thread_id TEXT NOT NULL,
+          snippet TEXT,
+          subject TEXT,
+          from_addr TEXT,
+          labels TEXT,
+          summary TEXT,
+          internal_date INTEGER,
+          last_synced INTEGER NOT NULL DEFAULT (unixepoch()),
+          UNIQUE(user_id, thread_id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_gmail_thread_user ON gmail_thread_cache(user_id, internal_date DESC);
+      `)
+      // Calendar event cache
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS calendar_event_cache (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          event_id TEXT NOT NULL,
+          calendar_id TEXT,
+          title TEXT,
+          start_ts INTEGER,
+          end_ts INTEGER,
+          attendees TEXT,
+          location TEXT,
+          description TEXT,
+          prep_notes TEXT,
+          last_synced INTEGER NOT NULL DEFAULT (unixepoch()),
+          UNIQUE(user_id, event_id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_calendar_event_user ON calendar_event_cache(user_id, start_ts);
+      `)
+      // Briefings archive
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS briefings (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          kind TEXT NOT NULL DEFAULT 'morning',
+          generated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+          content_md TEXT NOT NULL,
+          model_used TEXT,
+          cost_usd REAL,
+          input_summary TEXT
+        );
+        CREATE INDEX IF NOT EXISTS idx_briefings_user ON briefings(user_id, generated_at DESC);
+        CREATE INDEX IF NOT EXISTS idx_briefings_kind ON briefings(kind, generated_at DESC);
+      `)
+      // Reading sources
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS reading_sources (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          kind TEXT NOT NULL DEFAULT 'url',
+          title TEXT NOT NULL,
+          url TEXT,
+          drive_file_id TEXT,
+          status TEXT NOT NULL DEFAULT 'queued',
+          notes TEXT,
+          added_at INTEGER NOT NULL DEFAULT (unixepoch()),
+          updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+        );
+        CREATE INDEX IF NOT EXISTS idx_reading_sources_user ON reading_sources(user_id, status, added_at DESC);
+      `)
+      // Highlights
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS highlights (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          source_id INTEGER NOT NULL,
+          user_id INTEGER NOT NULL,
+          quote TEXT NOT NULL,
+          note TEXT,
+          location TEXT,
+          created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+          FOREIGN KEY (source_id) REFERENCES reading_sources(id) ON DELETE CASCADE
+        );
+        CREATE INDEX IF NOT EXISTS idx_highlights_source ON highlights(source_id);
+        CREATE INDEX IF NOT EXISTS idx_highlights_user ON highlights(user_id, created_at DESC);
+      `)
+      // Flashcards (Anki-style, SM-2 lite)
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS flashcards (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          source_id INTEGER,
+          user_id INTEGER NOT NULL,
+          front TEXT NOT NULL,
+          back TEXT NOT NULL,
+          ease REAL NOT NULL DEFAULT 2.5,
+          interval_days INTEGER NOT NULL DEFAULT 1,
+          due_at INTEGER NOT NULL DEFAULT (unixepoch()),
+          reviewed_count INTEGER NOT NULL DEFAULT 0,
+          last_reviewed_at INTEGER,
+          created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+          FOREIGN KEY (source_id) REFERENCES reading_sources(id) ON DELETE SET NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_flashcards_user_due ON flashcards(user_id, due_at);
+      `)
+      // Journal entries
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS journal_entries (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          entry_date TEXT NOT NULL,
+          mood INTEGER,
+          energy INTEGER,
+          content_md TEXT NOT NULL DEFAULT '',
+          created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+          updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+          UNIQUE(user_id, entry_date)
+        );
+        CREATE INDEX IF NOT EXISTS idx_journal_user_date ON journal_entries(user_id, entry_date DESC);
+      `)
+      // Goals
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS goals (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          title TEXT NOT NULL,
+          horizon TEXT NOT NULL DEFAULT 'week',
+          status TEXT NOT NULL DEFAULT 'active',
+          notes TEXT,
+          created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+          updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+        );
+        CREATE INDEX IF NOT EXISTS idx_goals_user ON goals(user_id, status);
+      `)
     }
   }
 ]
